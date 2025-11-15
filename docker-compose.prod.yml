@@ -1,0 +1,53 @@
+# Docker Compose cho môi trường Production
+# File này CHỈ chạy ứng dụng, KHÔNG chạy SQL Server
+# Dùng khi khách hàng ĐÃ CÓ SQL Server riêng
+
+# CÁCH SỬ DỤNG:
+# docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  # === CHỈ CÓ SERVICE: Ứng dụng ASP.NET Core ===
+  webapp:
+    # Build image từ Dockerfile
+    build:
+      context: .
+      dockerfile: QlySukienSV/Dockerfile
+
+    # Tên container
+    container_name: qlysukiensv-webapp-prod
+
+    # Biến môi trường cho Production
+    environment:
+      # Môi trường Production (để load appsettings.Production.json)
+      - ASPNETCORE_ENVIRONMENT=Production
+
+      # === QUAN TRỌNG: ĐỔI CONNECTION STRING NÀY ===
+      # Ví dụ:
+      # - Server=192.168.1.100: IP của SQL Server
+      # - Server=sql.example.com: Domain name của SQL Server
+      # - Server=localhost,1433: SQL Server trên cùng máy host
+      - ConnectionStrings__DefaultConnection=Server=YOUR_SQL_SERVER_HOST;Database=qlysukiensinhvien;User Id=YOUR_USERNAME;Password=YOUR_PASSWORD;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+    # Ánh xạ cổng
+    # Có thể đổi port 80 nếu muốn (ví dụ: 80:8080 cho production)
+    ports:
+      - "80:8080"
+
+    # Tự động restart
+    restart: unless-stopped
+
+    # Giới hạn tài nguyên cho container
+    deploy:
+      resources:
+        limits:
+          # Giới hạn tối đa 1GB RAM cho webapp
+          memory: 1G
+        reservations:
+          # Đảm bảo ít nhất 512MB RAM
+          memory: 512M
+
+# LƯU Ý:
+# - KHÔNG CÓ SQL Server service trong file này
+# - PHẢI đổi connection string ở trên để trỏ đúng SQL Server
+# - Đảm bảo SQL Server cho phép kết nối từ xa (firewall, SQL config)
+# - Nếu SQL Server yêu cầu SSL, có thể cần đổi TrustServerCertificate=False

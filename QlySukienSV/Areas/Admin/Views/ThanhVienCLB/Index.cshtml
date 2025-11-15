@@ -1,0 +1,69 @@
+﻿@using QlySukienSV.Constants
+@model IEnumerable<QlySukienSV.Models.ThanhVienCLB>
+@{
+    ViewData["Title"] = "Thành viên CLB";
+}
+<h5>Yêu cầu/Thành viên</h5>
+<table class="table table-striped table-sm">
+    <thead><tr><th>CLB</th><th>Họ tên</th><th>Vai trò</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.CLB?.TenCLB</td>
+                <td>@x.NguoiDung?.HoTen (@x.NguoiDung?.MaSoSV)</td>
+                @if (x.VaiTro == "ChuNhiem")
+                {
+                    <td><span class="">Chủ nhiệm</span></td>
+                }
+                else if (x.VaiTro == "PhoChuNhiem")
+                {
+                    <td><span class="">Phó chủ nhiệm</span></td>
+                }
+                else if (x.VaiTro == "ThanhVien")
+                {
+                    <td><span class="">Thành viên</span></td>
+                }
+                else if (x.VaiTro == "BanChapHanh")
+                {
+                    <td>Ban chấp hành</td>
+                }
+                else
+                {
+                    <td>@x.VaiTro</td>
+                }
+
+                @if (x.TrangThai == TrangThaiDangKy.DaDuyet)
+                {
+                    <td><span class="">Đã duyệt</span></td>
+                }
+                else if (x.TrangThai == TrangThaiDangKy.TuChoi)
+                {
+                    <td><span class="">Đã từ chối</span></td>
+                }
+                else if (x.TrangThai == TrangThaiDangKy.ChoDuyet)
+                {
+                    <td><span class="">Chờ duyệt</span></td>
+                }
+                else if (x.TrangThai == TrangThaiDangKy.DaThamGia)
+                {
+                    <td><span class="">Đã tham gia</span></td>
+                }
+                else
+                {
+                    <td>@x.TrangThai</td>
+                }
+
+
+                @if (x.TrangThai == TrangThaiDangKy.ChoDuyet)
+                {
+                    <td>
+                        <a class="btn btn-sm btn-success" asp-action="Duyet" asp-route-id="@x.Id">Duyệt</a>
+                        <a class="btn btn-sm btn-danger" asp-action="TuChoi" asp-route-id="@x.Id">Từ chối</a>
+                    </td>
+                }
+
+            </tr>
+        }
+    </tbody>
+</table>

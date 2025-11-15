@@ -1,0 +1,123 @@
+@model List<QlySukienSV.Models.ThanhVienCLB>
+@{
+    ViewData["Title"] = "Quản lý thành viên";
+}
+
+<div class="container-fluid">
+    <div class="">
+        <h5 class="mb-0">Quản lý thành viên</h5>
+    </div>
+    <div class="">
+        <!-- Filter Section -->
+        <form method="get" class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Lọc theo CLB</label>
+                <select name="clbFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả CLB --</option>
+                    @foreach (var clb in ViewBag.CLBs)
+                    {
+                        <option value="@clb.Id" selected="@(ViewBag.CurrentCLBFilter == clb.Id.ToString())">@clb.TenCLB</option>
+                    }
+                </select>
+            </div>
+            @* <div class="col-md-4">
+                <label class="form-label">Lọc theo Khóa</label>
+                <select name="khoaFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả Khóa --</option>
+                    @foreach (var khoa in ViewBag.Khoas)
+                    {
+                        <option value="@khoa" selected="@(ViewBag.CurrentKhoaFilter == khoa)">@khoa</option>
+                    }
+                </select>
+            </div> *@
+            <div class="col-md-6">
+                <label class="form-label">Lọc theo Lớp</label>
+                <select name="lopFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả Lớp --</option>
+                    @foreach (var lop in ViewBag.Lops)
+                    {
+                        <option value="@lop" selected="@(ViewBag.CurrentLopFilter == lop)">@lop</option>
+                    }
+                </select>
+            </div>
+        </form>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>CLB</th>
+                        <th>Mã SV</th>
+                        <th>Họ tên</th>
+                        <th>Lớp</th>
+                        <th>Vai trò trong CLB</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tham gia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var tv in Model)
+                        {
+                            <tr>
+                                <td>@tv.CLB?.TenCLB</td>
+                                <td>@tv.NguoiDung?.MaSoSV</td>
+                                <td>@tv.NguoiDung?.HoTen</td>
+                                <td>@tv.NguoiDung?.Lop</td>
+                                <td>
+                                    @if (tv.VaiTro == "ChuNhiem")
+                                    {
+                                        <span class="badge bg-primary">Chủ nhiệm</span>
+                                    }
+                                    else if (tv.VaiTro == "PhoChuNhiem")
+                                    {
+                                        <span class="badge bg-info">Phó chủ nhiệm</span>
+                                    }
+                                    else if (tv.VaiTro == "BanChapHanh")
+                                    {
+                                        <span class="badge bg-success">Ban chấp hành</span>
+                                    }
+                                    else if (tv.VaiTro == "ThanhVien")
+                                    {
+                                        <span class="badge bg-secondary">Thành viên</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@tv.VaiTro</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (tv.TrangThai == "DaDuyet")
+                                    {
+                                        <span class="badge bg-success">Đã duyệt</span>
+                                    }
+                                    else if (tv.TrangThai == "ChoDuyet")
+                                    {
+                                        <span class="badge bg-warning">Chờ duyệt</span>
+                                    }
+                                    else if (tv.TrangThai == "TuChoi")
+                                    {
+                                        <span class="badge bg-danger">Từ chối</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@tv.TrangThai</span>
+                                    }
+                                </td>
+                                <td>@tv.NgayThamGia.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Không có thành viên nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

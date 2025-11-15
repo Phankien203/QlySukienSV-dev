@@ -1,0 +1,25 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Lịch sự kiện";
+}
+<h5>Lịch sự kiện (theo ngày)</h5>
+@foreach (var group in Model)
+{
+    <div class="card my-3">
+        <div class="card-header fw-semibold">@(((DateTime)group.Ngay).ToString("dd/MM/yyyy"))</div>
+        <ul class="list-group list-group-flush">
+            @foreach (var s in group.Items)
+            {
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <span>
+                            <strong>@s.TenSuKien</strong>
+                            <span class="text-muted"> - @s.CLB?.TenCLB</span>
+                        </span>
+                        <span class="small">@s.NgayBatDau - @s.DiaDiem</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}

@@ -1,0 +1,121 @@
+# Docker Compose cho môi trường Development/Demo
+# File này sẽ chạy CẢ ứng dụng VÀ SQL Server cùng lúc
+
+services:
+  # === SERVICE 1: SQL Server ===
+  sqlserver:
+    # Sử dụng image SQL Server 2022 phiên bản Developer (miễn phí, dùng cho dev/test)
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+    # Tên container để dễ nhận biết
+    container_name: qlysukiensv-sqlserver
+
+    # Biến môi trường cần thiết để SQL Server chạy
+    environment:
+      # Chấp nhận điều khoản sử dụng của Microsoft (bắt buộc)
+      - ACCEPT_EULA=Y
+
+      # Mật khẩu SA (System Administrator) - ĐỔI MẬT KHẨU NÀY KHI DEPLOY THẬT!
+      # Yêu cầu: ít nhất 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt
+      - SA_PASSWORD=YourStrong@Passw0rd
+
+      # Chọn phiên bản SQL Server (Developer = miễn phí)
+      - MSSQL_PID=Developer
+
+    # Ánh xạ cổng: host:container
+    # Cổng 1433 của container được map ra cổng 1433 của máy host
+    # Để có thể kết nối từ bên ngoài qua localhost:1433
+    ports:
+      - "1433:1433"
+
+    # Volume để lưu trữ dữ liệu database
+    # Dữ liệu sẽ không mất khi container bị xóa
+    volumes:
+      # sqlserver-data là named volume (Docker tự quản lý)
+      # /var/opt/mssql là nơi SQL Server lưu data trong container
+      - sqlserver-data:/var/opt/mssql
+
+    # Cài đặt tài nguyên cho container
+    deploy:
+      resources:
+        limits:
+          # Giới hạn tối đa 2GB RAM (SQL Server khá nặng)
+          memory: 2G
+        reservations:
+          # Đảm bảo ít nhất 1GB RAM cho SQL Server
+          memory: 1G
+
+    # Chính sách restart: luôn tự động khởi động lại nếu container bị tắt
+    restart: unless-stopped
+
+    # Kết nối vào cùng network với webapp
+    networks:
+      - qlysukiensv-network
+
+    # Kiểm tra sức khỏe của SQL Server
+    healthcheck:
+      # Lệnh kiểm tra: chạy sqlcmd để test kết nối
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -C -Q "SELECT 1" || exit 1
+
+      # Khoảng thời gian giữa các lần kiểm tra
+      interval: 10s
+
+      # Thời gian chờ tối đa cho mỗi lần test
+      timeout: 3s
+
+      # Số lần thử lại trước khi đánh dấu là unhealthy
+      retries: 10
+
+      # Thời gian chờ trước khi bắt đầu kiểm tra lần đầu
+      start_period: 20s
+
+  # === SERVICE 2: Ứng dụng ASP.NET Core ===
+  webapp:
+    # Build image từ Dockerfile trong thư mục QlySukienSV
+    build:
+      # Thư mục context để build (thư mục gốc của solution)
+      context: .
+
+      # Đường dẫn tới Dockerfile
+      dockerfile: QlySukienSV/Dockerfile
+
+    # Tên container
+    container_name: qlysukiensv-webapp
+
+    # Biến môi trường cho ứng dụng
+    environment:
+      # Đặt môi trường là Docker (để load appsettings.Docker.json)
+      # appsettings.Docker.json sẽ chứa connection string cho Docker
+      - ASPNETCORE_ENVIRONMENT=Docker
+
+    # Ánh xạ cổng
+    # Cổng 8080 của container map ra cổng 5000 của host
+    # Truy cập ứng dụng qua: http://localhost:5000
+    ports:
+      - "5000:8080"
+
+    # Phụ thuộc vào service SQL Server
+    depends_on:
+      sqlserver:
+        # Chỉ start webapp khi SQL Server đã healthy (qua healthcheck)
+        condition: service_healthy
+
+    # Tự động restart nếu container bị tắt
+    restart: unless-stopped
+
+    # Kết nối vào cùng network với SQL Server
+    # (Docker tự tạo default network, nhưng khai báo rõ ràng hơn)
+    networks:
+      - qlysukiensv-network
+
+# === ĐỊNH NGHĨA NETWORKS VÀ VOLUMES ===
+networks:
+  # Định nghĩa custom network để các container giao tiếp với nhau
+  qlysukiensv-network:
+    driver: bridge
+
+# Định nghĩa volumes
+volumes:
+  # Named volume để lưu data SQL Server
+  # Data sẽ được lưu persistent, không mất khi xóa container
+  sqlserver-data:

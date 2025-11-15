@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Thống kê";
+}
+<div class="row g-3">
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <div class="fs-6">CLB</div>
+                <div class="display-6">@ViewBag.CLBDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <div class="fs-6">Thành viên</div>
+                <div class="display-6">@ViewBag.ThanhVienDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <div class="fs-6">Sự kiện</div>
+                <div class="display-6">@ViewBag.SuKienDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-info">
+            <div class="card-body">
+                <div class="fs-6">Điểm danh</div>
+                <div class="display-6">@ViewBag.DiemDanhDem</div>
+            </div>
+        </div>
+    </div>
+</div>

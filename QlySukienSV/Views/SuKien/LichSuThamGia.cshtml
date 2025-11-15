@@ -1,0 +1,18 @@
+﻿@model IEnumerable<QlySukienSV.Models.DangKySuKien>
+@{
+  ViewData["Title"] = "Lịch sử đăng ký";
+}
+<h5>Lịch sử đăng ký sự kiện</h5>
+<table class="table table-striped table-sm mt-3">
+  <thead><tr><th>Sự kiện</th><th>CLB</th><th>Thời gian ĐK</th><th>Trạng thái</th></tr></thead>
+  <tbody>
+  @foreach(var d in Model){
+    <tr>
+      <td>@d.SuKien?.TenSuKien</td>
+      <td>@d.SuKien?.CLB?.TenCLB</td>
+      <td>@d.ThoiGianDangKy </td>
+      <td>@d.TrangThai</td>
+    </tr>
+  }
+  </tbody>
+</table>

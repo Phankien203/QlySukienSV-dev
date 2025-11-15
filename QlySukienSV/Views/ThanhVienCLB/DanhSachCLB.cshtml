@@ -1,0 +1,26 @@
+﻿@model IEnumerable<QlySukienSV.Models.ThanhVienCLB>
+@{
+  ViewData["Title"] = "CLB của tôi";
+}
+<h5>CLB của tôi</h5>
+<table class="table table-striped table-sm mt-3">
+  <thead><tr><th>CLB</th><th>Vai trò</th><th>Trạng thái</th><th>Ngày tham gia</th></tr></thead>
+  <tbody>
+  @foreach(var x in Model){
+    <tr>
+      <td><a asp-controller="Home" asp-action="ChiTietCLB" asp-route-id="@x.CLBId">@x.CLB?.TenCLB</a></td>
+      <td>@x.VaiTro</td>
+      <td>
+        @if(x.TrangThai=="DaDuyet"){
+          <span class="badge text-bg-success">Đã duyệt</span>
+        }else if(x.TrangThai=="ChoDuyet"){
+          <span class="badge text-bg-warning text-dark">Chờ duyệt</span>
+        }else{
+          <span class="badge text-bg-danger">Từ chối</span>
+        }
+      </td>
+      <td>@x.NgayThamGia:dd/MM/yyyy</td>
+    </tr>
+  }
+  </tbody>
+</table>

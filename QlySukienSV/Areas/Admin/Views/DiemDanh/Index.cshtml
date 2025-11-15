@@ -1,0 +1,20 @@
+﻿@model IEnumerable<QlySukienSV.Models.DiemDanhSuKien>
+@{
+    ViewData["Title"] = "Điểm danh";
+}
+<h5>Danh sách điểm danh</h5>
+<table class="table table-striped table-sm">
+    <thead><tr><th>Sự kiện</th><th>CLB</th><th>Sinh viên</th><th>Thời gian</th><th>Hình thức</th></tr></thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.SuKien?.TenSuKien</td>
+                <td>@x.SuKien?.CLB?.TenCLB</td>
+                <td>@x.NguoiDung?.HoTen (@x.NguoiDung?.MaSoSV)</td>
+                <td>@x.ThoiGianDiemDanh</td>
+                <td>@x.HinhThuc</td>
+            </tr>
+        }
+    </tbody>
+</table>

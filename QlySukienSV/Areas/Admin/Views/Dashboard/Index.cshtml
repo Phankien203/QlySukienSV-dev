@@ -1,0 +1,178 @@
+﻿@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+<!-- Cards thống kê tổng quan -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="fs-5">CLB</div>
+                <div class="display-6 fw-bold">@ViewBag.CLBDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="fs-5">Sinh viên</div>
+                <div class="display-6 fw-bold">@ViewBag.SVDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="fs-5">Sự kiện</div>
+                <div class="display-6 fw-bold">@ViewBag.SuKienDem</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="fs-5">Sinh viên tham gia CLB</div>
+                <div class="display-6 fw-bold">@ViewBag.ThanhVienDem</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thống kê dữ liệu -->
+<h4 class="mb-3">Thống kê dữ liệu</h4>
+
+<div class="row g-3">
+    <!-- Biểu đồ cột -->
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Biểu đồ số liệu</h5>
+                <canvas id="statsChart" style="max-height: 400px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng thống kê -->
+    <div class="col-12 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Tổng số (thống kê)</h5>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td>CLB Hoạt động</td>
+                            <td class="text-end"><strong>@ViewBag.CLBActive</strong></td>
+                        </tr>
+                        <tr>
+                            <td>CLB Ngừng hoạt động</td>
+                            <td class="text-end"><strong>@ViewBag.CLBInactive</strong></td>
+                        </tr>
+                        <tr class="table-light">
+                            <td colspan="2"><strong>Sự kiện</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Sắp diễn ra</td>
+                            <td class="text-end"><strong>@ViewBag.SuKienSapDienRa</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Đang diễn ra</td>
+                            <td class="text-end"><strong>@ViewBag.SuKienDangDienRa</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Hoàn thành</td>
+                            <td class="text-end"><strong>@ViewBag.SuKienHoanThanh</strong></td>
+                        </tr>
+                        <tr class="table-light">
+                            <td colspan="2"><strong>Thành viên</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Chủ nhiệm</td>
+                            <td class="text-end"><strong>@ViewBag.ChuNhiem</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Phó chủ nhiệm</td>
+                            <td class="text-end"><strong>@ViewBag.PhoChuNhiem</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Ban chấp hành</td>
+                            <td class="text-end"><strong>@ViewBag.BanChapHanh</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Thành viên</td>
+                            <td class="text-end"><strong>@ViewBag.ThanhVien</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Khách</td>
+                            <td class="text-end"><strong>@ViewBag.Khach</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/Chart.bundle.js"></script>
+    <script>
+        // Dữ liệu cho biểu đồ
+        var ctx = document.getElementById('statsChart').getContext('2d');
+        var statsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['CLB', 'Sinh viên', 'Sự kiện', 'Sinh viên tham gia CLB'],
+                datasets: [
+                    {
+                        label: 'Hoạt động',
+                        data: [@ViewBag.CLBActive, @ViewBag.SVDem, @ViewBag.SuKienDangDienRa, @ViewBag.SinhVienThamGiaCLB],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Sắp diễn ra',
+                        data: [0, 0, @ViewBag.SuKienSapDienRa, 0],
+                        backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Hoàn thành',
+                        data: [0, 0, @ViewBag.SuKienHoanThanh, 0],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                    // {
+                    //     label: 'Chủ nhiệm',
+                    //     data: [0, 0, 0, @ViewBag.ChuNhiem],
+                    //     backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    //     borderColor: 'rgba(255, 99, 132, 1)',
+                    //     borderWidth: 1
+                    // }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,79 @@
+﻿@using QlySukienSV.Constants
+@model QlySukienSV.Models.SuKien
+@{
+    ViewData["Title"] = "Chi tiết sự kiện";
+}
+<h5 class="mb-2">@Model.TenSuKien</h5>
+<div class="text-muted mb-2">@Model.CLB?.TenCLB</div>
+<div class="mb-2"><strong>Thời gian:</strong> @Model.NgayBatDau.ToString("dd/MM/yyyy HH:mm") -
+    @Model.NgayKetThuc.ToString("dd/MM/yyyy HH:mm")</div>
+<div class="mb-2"><strong>Địa điểm:</strong> @Model.DiaDiem</div>
+<p>@Model.MoTa</p>
+@if (ViewBag.CurrentRegistration == null)
+{
+    <form asp-controller="SuKien" asp-action="ThamGia" method="post">
+        <input type="hidden" name="suKienId" value="@Model.Id" />
+        <button class="btn btn-primary" type="submit">Đăng ký tham gia</button>
+    </form>
+}
+else if (ViewBag.CurrentRegistration.TrangThai == TrangThaiDangKy.ChoDuyet)
+{
+    <span class="badge text-bg-warning">Chờ duyệt</span>
+}
+else if (ViewBag.CurrentRegistration.TrangThai == TrangThaiDangKy.TuChoi)
+{
+    <span class="badge text-bg-danger">Bị từ chối</span>
+}
+else if (ViewBag.CurrentRegistration.TrangThai == TrangThaiDangKy.DaDuyet || ViewBag.CurrentRegistration.TrangThai ==
+TrangThaiDangKy.DaThamGia)
+{
+    @if (ViewBag.DaDiemDanh)
+    {
+        <span class="badge text-bg-success">Đã điểm danh</span>
+    }
+    else
+    {
+        <span class="badge text-bg-success">Đã được duyệt</span>
+        <br />
+
+        @if (ViewBag.CoTheDiemDanh)
+        {
+            <div class="mt-3">
+                <h6>Điểm danh</h6>
+                <form asp-controller="DiemDanh" asp-action="ThamGia" method="post" class="d-inline">
+                    <input type="hidden" name="suKienId" value="@Model.Id" />
+                    <button class="btn btn-primary" type="submit">Điểm danh bằng nút</button>
+                </form>
+
+                <div class="mt-3">
+                    <p>Hoặc quét mã QR để điểm danh:</p>
+                    <div id="qrcode"></div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-3">
+                Điểm danh sẽ mở trước giờ bắt đầu 2 tiếng và đóng khi sự kiện kết thúc.
+            </div>
+        }
+    }
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        @if (ViewBag.CoTheDiemDanh && !ViewBag.DaDiemDanh)
+            {
+                <text>
+                                    // Tạo QR code với URL điểm danh
+                    var qrCodeUrl = '@Url.Action("QuetQR", "DiemDanh", new { suKienId = Model.Id }, Context.Request.Scheme)';
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: qrCodeUrl,
+                    width: 200,
+                    height: 200
+                                    });
+                </text>
+        }
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿@model QlySukienSV.Models.CLB
+@{
+    ViewData["Title"] = "Chi tiết CLB";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">@Model.TenCLB</h5>
+    <div>
+        <a asp-controller="SuKien" asp-action="DanhSachSuKien" asp-route-clbId="@Model.Id" class="btn btn-sm btn-outline-primary">Sự kiện</a>
+    </div>
+</div>
+<p class="text-muted">@Model.MoTa</p>
+<div class="mb-3">
+    <strong>Chủ nhiệm:</strong> @Model.ChuNhiem?.HoTen
+</div>
+@if (ViewBag.CurrentMembership == null)
+{
+    <a class="btn btn-primary" asp-controller="ThanhVienCLB" asp-action="DangKy" asp-route-clbId="@Model.Id">Tham gia CLB</a>
+}
+else if (ViewBag.CurrentMembership.TrangThai == TrangThaiThanhVien.TuChoi)
+{
+    <span class="badge text-bg-danger">Yêu cầu tham gia bị từ chối</span>
+}
+else if (ViewBag.CurrentMembership.TrangThai == TrangThaiThanhVien.ChoDuyet)
+{
+    <span class="badge text-bg-warning">Yêu cầu đang chờ phê duyệt</span>
+}
+else
+{
+    <span class="badge text-bg-success">Đã tham gia</span>
+}
+<hr />
+<h6>Thành viên</h6>
+<table class="table table-sm table-striped">
+    <thead><tr><th>Họ tên</th><th>Vai trò</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+        @foreach (var tv in Model.ThanhViens.Where(a => a.TrangThai == TrangThaiThanhVien.DaDuyet))
+        {
+            <tr><td>@tv.NguoiDung?.HoTen</td><td>@tv.VaiTro</td><td>@tv.TrangThai</td></tr>
+        }
+    </tbody>
+</table>

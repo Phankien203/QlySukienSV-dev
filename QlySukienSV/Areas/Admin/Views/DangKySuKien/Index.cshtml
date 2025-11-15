@@ -1,0 +1,47 @@
+@using QlySukienSV.Constants
+@model IEnumerable<QlySukienSV.Models.DangKySuKien>
+@{
+    ViewData["Title"] = "Duyệt yêu cầu tham gia sự kiện";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Yêu cầu tham gia sự kiện (Chờ duyệt)</h5>
+</div>
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Sự kiện</th>
+            <th>Người đăng ký</th>
+            <th>Thời gian đăng ký</th>
+            <th>Trạng thái</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td>@x.SuKien?.TenSuKien</td>
+                    <td>@x.NguoiDung?.HoTen (@x.NguoiDung?.MaSoSV)</td>
+                    <td>@x.ThoiGianDangKy.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td><span class="badge bg-warning">Chờ duyệt</span></td>
+                    <td>
+                        <form asp-action="Duyet" asp-route-id="@x.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc muốn duyệt yêu cầu này?');">Duyệt</button>
+                        </form>
+                        <form asp-action="TuChoi" asp-route-id="@x.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn từ chối yêu cầu này?');">Từ chối</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">Không có yêu cầu nào chờ duyệt</td>
+            </tr>
+        }
+    </tbody>
+</table>
